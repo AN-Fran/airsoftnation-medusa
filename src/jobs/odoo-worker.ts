@@ -24,6 +24,22 @@ export default async function startOdooWorker(
     // 2. Aquí irá la llamada real a Odoo
     // const odooId = await sendOrderToOdoo(order)
 
+    } catch (error: any) {
+    // Errores no recuperables o retries agotados
+    if (job.attemptsMade >= (job.opts.attempts ?? 1) - 1) {
+      await odooDlq.add({
+        job: job.data,
+        error: error.message,
+        failed_at: new Date().toISOString(),
+      })
+
+      console.error("☠️ Sent to DLQ", job.data.order_id)
+    }
+
+    throw error // deja que Bull gestione retry
+  }
+})
+
     const odooId = `ODOO-${order.display_id}` // placeholder
 
     // 3. Persistir referencia
