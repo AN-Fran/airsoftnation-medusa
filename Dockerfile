@@ -2,16 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copiamos solo manifests (mejora cache)
 COPY package.json package-lock.json ./
-
-# Instalación reproducible
 RUN npm ci
 
-# Copiamos el resto del código
 COPY . .
+
+# 👇 ESTE PASO ES OBLIGATORIO EN MEDUSA V2
+RUN npx medusa build
 
 EXPOSE 9000
 
-# CMD ["npm", "run", "start"]
 CMD ["npx", "medusa", "start", "--host", "0.0.0.0", "--port", "9000"]
