@@ -4,7 +4,7 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
 export default defineConfig({
   admin: {
-    disable: true,
+    disable: false,
   },
 
   projectConfig: {
