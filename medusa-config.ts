@@ -8,7 +8,7 @@ export default defineConfig({
    * Se expone en admin.airsoftnation.eu
    */
   admin: {
-    disable: false,
+    disable: true,
   },
 
   projectConfig: {
