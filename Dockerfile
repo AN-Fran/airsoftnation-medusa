@@ -13,5 +13,5 @@ COPY . .
 
 EXPOSE 9000
 
-CMD ["npm", "run", "start"]
-
+# CMD ["npm", "run", "start"]
+CMD ["npx", "medusa", "start", "--host", "0.0.0.0", "--port", "9000"]
