@@ -13,7 +13,7 @@ export default async function startOdooWorker(
 
       const order = await orderService.retrieve(order_id)
 
-      // 1. Idempotencia
+      // 1. Idempotencia: si ya está en Odoo, salir
       if (order.metadata?.odoo_id) {
         console.log(
           "⏭ Order already synced to Odoo",
@@ -23,24 +23,39 @@ export default async function startOdooWorker(
         return
       }
 
-      // 2. Envío a Odoo (placeholder)
+      /**
+       * 2. Envío a Odoo
+       * (placeholder — aquí irá la llamada real)
+       */
       // const odooId = await sendOrderToOdoo(order)
       const odooId = `ODOO-${order.display_id}`
 
-      // 3. Persistir referencia
+      /**
+       * 3. Persistir referencia + LOCK ERP
+       */
       await orderService.update(order.id, {
         metadata: {
           ...order.metadata,
           odoo_id: odooId,
+          odoo_status: "pending_confirmation",
+          odoo_locked: true,
           odoo_synced_at: new Date().toISOString(),
         },
       })
 
-      console.log("✔ Order synced to Odoo", order.id, odooId)
+      console.log(
+        "✔ Order synced to Odoo (locked)",
+        order.id,
+        odooId
+      )
 
-      return { odoo_id: odooId }
+      return {
+        order_id: order.id,
+        odoo_id: odooId,
+        status: "pending_confirmation",
+      }
     } catch (error: any) {
-      // Dead-letter si se agotan retries
+      // Enviar a DLQ si se agotan los retries
       if (
         job.attemptsMade >=
         ((job.opts.attempts ?? 1) - 1)
@@ -57,7 +72,8 @@ export default async function startOdooWorker(
         )
       }
 
-      throw error // deja que Bull gestione retry
+      // Dejar que Bull gestione el retry
+      throw error
     }
   })
 }
