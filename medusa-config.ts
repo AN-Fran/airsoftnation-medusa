@@ -1,8 +1,8 @@
-import { loadEnv, defineConfig } from '@medusajs/framework/utils'
+import { loadEnv, defineConfig } from "@medusajs/framework/utils"
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || "development", process.cwd())
 
-module.exports = defineConfig({
+export default defineConfig({
   admin: {
     disable: true,
   },
@@ -12,12 +12,12 @@ module.exports = defineConfig({
     redisUrl: process.env.REDIS_URL,
 
     http: {
-      storeCors: process.env.STORE_CORS || "*",
-      adminCors: process.env.ADMIN_CORS || "*",
-      authCors: process.env.AUTH_CORS || "*",
+      storeCors: process.env.STORE_CORS || "https://shop.airsoftnation.eu",
+      adminCors: process.env.ADMIN_CORS || "https://admin.airsoftnation.eu",
+      authCors: process.env.AUTH_CORS || "https://shop.airsoftnation.eu",
 
-      jwtSecret: process.env.JWT_SECRET || "supersecret",
-      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    }
-  }
+      jwtSecret: process.env.JWT_SECRET!,
+      cookieSecret: process.env.COOKIE_SECRET!,
+    },
+  },
 })
